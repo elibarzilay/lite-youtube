@@ -25,7 +25,7 @@ export class LiteYTEmbed extends HTMLElement {
   private domRefPlayButton!: HTMLButtonElement;
   private static isPreconnected = false;
   private isIframeLoaded = false;
-  private static _observedAttributes = ['videoid', 'playlistid', 'videotitle', 'videoplay'];
+  private static _observedAttributes = ['videoid', 'playlistid', 'aspectratio', 'videotitle', 'videoplay'];
 
   constructor() {
     super();
@@ -58,6 +58,14 @@ export class LiteYTEmbed extends HTMLElement {
 
   set playlistId(id: string) {
     this.setAttribute('playlistid', id);
+  }
+
+  get aspectRatio(): string {
+    return this.getAttribute('aspectratio') ?? '';
+  }
+
+  set aspectRatio(title: string) {
+    this.setAttribute('aspectratio', title);
   }
 
   get videoTitle(): string {
@@ -123,12 +131,12 @@ export class LiteYTEmbed extends HTMLElement {
           display: block;
           position: relative;
           width: 100%;
-          padding-bottom: calc(100% / (16 / 9));
+          padding-bottom: calc(100% / (${this.aspectRatio || '16 / 9'}));
         }
 
         @media (max-width: 40em) {
           :host([short]) {
-            padding-bottom: calc(100% / (9 / 16));
+            padding-bottom: calc(100% / (${this.aspectRatio || '9 / 16'}));
           }
         }
 
