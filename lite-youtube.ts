@@ -25,6 +25,7 @@ export class LiteYTEmbed extends HTMLElement {
   private domRefPlayButton!: HTMLButtonElement;
   private static isPreconnected = false;
   private isIframeLoaded = false;
+  private static _observedAttributes = ['videoid', 'playlistid', 'videotitle', 'videoplay'];
 
   constructor() {
     super();
@@ -32,7 +33,7 @@ export class LiteYTEmbed extends HTMLElement {
   }
 
   static get observedAttributes(): string[] {
-    return ['videoid', 'playlistid', 'videotitle', 'videoplay'];
+    return this._observedAttributes;
   }
 
   connectedCallback(): void {
@@ -239,25 +240,15 @@ export class LiteYTEmbed extends HTMLElement {
     oldVal: unknown,
     newVal: unknown
   ): void {
-    switch (name) {
-      case 'videoid':
-      case 'playlistid':
-      case 'videotitle':
-      case 'videoplay': {
-        if (oldVal !== newVal) {
-          this.setupComponent();
+    if (oldVal !== newVal && LiteYTEmbed.observedAttributes.includes(name.toLowerCase())) {
+      this.setupComponent();
 
-          // if we have a previous iframe, remove it and the activated class
-          if (this.domRefFrame.classList.contains('activated')) {
-            this.domRefFrame.classList.remove('activated');
-            this.shadowRoot.querySelector('iframe')!.remove();
-            this.isIframeLoaded = false;
-          }
-        }
-        break;
+      // if we have a previous iframe, remove it and the activated class
+      if (this.domRefFrame.classList.contains('activated')) {
+        this.domRefFrame.classList.remove('activated');
+        this.shadowRoot.querySelector('iframe')!.remove();
+        this.isIframeLoaded = false;
       }
-      default:
-        break;
     }
   }
 
